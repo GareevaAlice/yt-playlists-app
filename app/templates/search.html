@@ -1,0 +1,166 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="container">
+    <div class="row align-items-center">
+        <div class="card mt-1 col-7 mx-auto" style="border-radius: 25pt; box-shadow: 1px 1px 1px">
+            <div class="card-body h6">
+                <div class="h5 mt-2 text-center"> Поиск по плейлисту</div>
+                <div class="text-center alert-secondary">
+                    <a target="_blank" href={{playlist_url}} class="alert-link">
+                        {{ playlist_url }}
+                    </a>
+                </div>
+                <div class="mt-2 d-grid">
+                    <a href="{{ url_for('main') }}" class="btn btn-secondary">
+                        Изменить плейлист
+                    </a>
+                </div>
+                <hr/>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="h5 mt-2 text-center">
+                        Критерии поиска
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                             class="bi bi-question-circle" viewBox="0 0 20 20"
+                             data-toggle="tooltip" data-placement="right"
+                             title="Оставьте поля пустым, если в них нет необходимости.">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                            <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"></path>
+                        </svg>
+                    </div>
+                    <div class="mt-1">
+                        {{ form.code_words.label }}
+                    </div>
+                    <div class="mt-1">
+                        {{ form.code_words(class_="form-control bg-light") }}
+                    </div>
+                    <div class="mt-2 form-switch">
+                        <label class="col-5">
+                            {{ form.search_by_description(class_="form-check-input") }}
+                            {{ form.search_by_description.label }}
+                        </label>
+                        <label>
+                            {{ form.bilingual_search(class_="form-check-input col-2") }}
+                            {{ form.bilingual_search.label }}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                 class="bi bi-question-circle" viewBox="0 -1 20 19"
+                                 data-toggle="tooltip" data-placement="right"
+                                 title="Осуществляет работу с Detect Language API (определение языка) и MyMemory API (перевод). Не забудьте добавить detectlanguage-api-key.">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                                <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"></path>
+                            </svg>
+                        </label>
+                    </div>
+                    {% if form.bilingual_search.errors %}
+                    <div class="mt-2 alert-danger">
+                        <strong>
+                            {% for error in form.bilingual_search.errors %}
+                            {{ error | safe}}
+                            {% endfor %}
+                        </strong>
+                    </div>
+                    {% endif %}
+                    {% if translation %}
+                    <p class="mt-2 text-muted">
+                        Перевод: {{ translation }}
+                    </p>
+                    {% endif %}
+                    <div class="mt-2">
+                        {{ form.author.label }}
+                    </div>
+                    <div class="mt-1 col-5">
+                        {{ form.author(class_="form-control bg-light form-control-sm") }}
+                    </div>
+                    <div class="mt-2">
+                        {{ form.search_type.label }}
+                    </div>
+                    <div class="mt-1 d-flex justify-content-between">
+                        <div>
+                            {% for subfield in form.search_type %}
+                            {{ subfield(class_="btn-check") }}
+                            {{ subfield.label(class_="btn btn-outline-primary") }}
+                            {% endfor %}
+                        </div>
+                        <div>
+                            {{ form.show_preview(class_="btn-check", id="show_preview") }}
+                            {{ form.show_preview.label(class_="btn btn-outline-secondary", for="show_preview") }}
+                        </div>
+                    </div>
+                    <div class="mt-2 d-grid">
+                        {{ form.submit(class_="btn btn-primary") }}
+                    </div>
+                    {% if nothing_error and results|length == 0 %}
+                    <div class="mt-2 alert-danger">
+                        <strong>
+                            {{ nothing_error | safe }}
+                        </strong>
+                    </div>
+                    {% endif %}
+                    {% if form.code_words.errors %}
+                    <div class="mt-2 alert-danger">
+                        <strong>
+                            {% for error in form.code_words.errors %}
+                            {{ error | safe}}
+                            {% endfor %}
+                        </strong>
+                    </div>
+                    {% endif %}
+                    {% if form.author.errors %}
+                    <div class="mt-2 alert-danger">
+                        <strong>
+                            {% for error in form.author.errors %}
+                            {{ error | safe}}
+                            {% endfor %}
+                        </strong>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% if not nothing_error and results|length > 0 %}
+<table class="mt-2 table table-hover caption-top align-middle" border="1">
+    <caption>
+        Найденные результаты (Всего: {{ results|length }})
+    </caption>
+    <tr>
+        <th data-toggle="tooltip" data-placement="right"
+            title="Номер видео в плейлисте.">#
+        </th>
+        <th>Видео</th>
+        <th>Название</th>
+        <th>Автор</th>
+        <th>Описание</th>
+    </tr>
+    {% for key in results %}
+    <tr>
+        <td>{{ results[key]['ind'] }}</td>
+        <td>
+            {% if form.show_preview.data %}
+            <a target="_blank" href={{results[key]['url']}}>
+                <img src={{results[key]['img_url']}} height="200" alt="Ссылка">
+            </a>
+            {% else %}
+            <div class="text-center alert-secondary">
+                <a target="_blank" href={{results[key]['url']}} class="alert-link">
+                    Ссылка
+                </a>
+            </div>
+            {% endif %}
+        </td>
+        <td> {{ results[key]['title'] }}</td>
+        <td>
+            <div class="text-center alert-secondary">
+                <a target="_blank" href={{results[key]['author_url']}} class="alert-link">
+                    {{ results[key]['author'] }}
+                </a>
+            </div>
+        </td>
+        <td> {{ results[key]['description'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}

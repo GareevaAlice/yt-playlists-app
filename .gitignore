@@ -1,0 +1,21 @@
+# PyCharm
+.idea/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Окружение
+venv/
+
+# Папка с дополнительными файлами
+files/
+
+# ссылки-примеры плейлистов
+files/examples
+
+# api-keys (!!!)
+files/youtube-api-key.txt
+files/detectlanguage-api-key.txt
+
+# OAuth client_secret (!!!)
+files/client_secret.json

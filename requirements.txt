@@ -1,0 +1,8 @@
+Flask==2.0.1
+Flask-WTF==0.15.1
+pandas==1.3.0
+python-youtube==0.8.1
+requests==2.25.1
+WTForms==2.3.3
+google-api-python-client
+google_auth_oauthlib
